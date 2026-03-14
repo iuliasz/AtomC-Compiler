@@ -33,8 +33,13 @@ enum{
 	,AND
 	,OR
 	,NOT
-	,ASSIGN,
-	EQUAL
+	,ASSIGN
+	,EQUAL
+	,NOTEQ
+	,LESS
+	,LESSEQ
+	,GREATER
+	,GREATEREQ
 	};
 
 typedef struct Token{

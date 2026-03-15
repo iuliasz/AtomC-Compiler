@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "lexer.h"
 #include "utils.h"
@@ -295,7 +296,56 @@ Token *tokenize(const char *pch){
 	}
 
 void showTokens(const Token *tokens){
-	for(const Token *tk=tokens;tk;tk=tk->next){
-		printf("%d\n",tk->code);
-		}
-	}
+    for(const Token *tk=tokens; tk; tk=tk->next){
+        printf("%d\t", tk->line);
+
+        switch(tk->code){
+            case ID: printf("ID:%s", tk->text); break;
+
+            case TYPE_CHAR: printf("TYPE_CHAR"); break;
+            case TYPE_DOUBLE: printf("TYPE_DOUBLE"); break;
+            case ELSE: printf("ELSE"); break;
+            case IF: printf("IF"); break;
+            case TYPE_INT: printf("TYPE_INT"); break;
+            case RETURN: printf("RETURN"); break;
+            case STRUCT: printf("STRUCT"); break;
+            case VOID: printf("VOID"); break;
+            case WHILE: printf("WHILE"); break;
+
+            case INT: printf("INT:%d", tk->i); break;
+            case DOUBLE: printf("DOUBLE:%g", tk->d); break;
+            case CHAR: printf("CHAR:%c", tk->i); break;
+            case STRING: printf("STRING:%s", tk->text); break;
+
+            case COMMA: printf("COMMA"); break;
+            case SEMICOLON: printf("SEMICOLON"); break;
+            case LPAR: printf("LPAR"); break;
+            case RPAR: printf("RPAR"); break;
+            case LBRACKET: printf("LBRACKET"); break;
+            case RBRACKET: printf("RBRACKET"); break;
+            case LACC: printf("LACC"); break;
+            case RACC: printf("RACC"); break;
+            case END: printf("END"); break;
+
+            case ADD: printf("ADD"); break;
+            case SUB: printf("SUB"); break;
+            case MUL: printf("MUL"); break;
+            case DIV: printf("DIV"); break;
+            case DOT: printf("DOT"); break;
+            case AND: printf("AND"); break;
+            case OR: printf("OR"); break;
+            case NOT: printf("NOT"); break;
+            case ASSIGN: printf("ASSIGN"); break;
+            case EQUAL: printf("EQUAL"); break;
+            case NOTEQ: printf("NOTEQ"); break;
+            case LESS: printf("LESS"); break;
+            case LESSEQ: printf("LESSEQ"); break;
+            case GREATER: printf("GREATER"); break;
+            case GREATEREQ: printf("GREATEREQ"); break;
+
+            default: printf("UNKNOWN");
+        }
+
+        printf("\n");
+    }
+}

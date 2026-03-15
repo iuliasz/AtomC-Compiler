@@ -1,0 +1,14 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "../lexer.h"
+#include "../utils.h"
+
+int main(){
+	char *buf = loadFile("tests/testlex.c");
+
+	Token *tokens = tokenize(buf);
+
+	showTokens(tokens);
+
+	return 0;
+}

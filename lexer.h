@@ -13,6 +13,12 @@ enum{
 	,VOID
 	,WHILE
 
+	// constants
+	,INT
+	,DOUBLE
+	,CHAR
+	,STRING
+
 	// delimiters
 	,COMMA
 	,SEMICOLON

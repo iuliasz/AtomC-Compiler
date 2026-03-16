@@ -1,6 +1,0 @@
-\[\^?(((\\.|[^\\\[\]\-])-(\\.|[^\\\[\]\-])|(\\.|[^\\\[\]\-])))+\]
-
-Exemple:
-
-Exemple valide: [abc] [^0-9] [\r\n\t ] [., !?;\-] [\\]
-Exemple invalide (nu trebuie recunoscute): [\] [\\\] [a

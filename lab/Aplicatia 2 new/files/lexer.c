@@ -27,7 +27,13 @@ Token *addTk(int code){
 	}
 
 char *extract(const char *begin,const char *end){
-	err("extract needs to be implemented");
+	int n=(int)(end-begin);
+
+	char *text=safeAlloc(n+1);
+	memcpy(text,begin,n);
+	text[n]='\0';
+
+	return text;
 	}
 
 Token *tokenize(const char *pch){

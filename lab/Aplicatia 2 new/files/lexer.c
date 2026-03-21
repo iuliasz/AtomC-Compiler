@@ -229,7 +229,8 @@ Token *tokenize(const char *pch){
 						
 					//  constants
 					}else if(isdigit(*pch)){
-						for(start=pch++;isdigit(*pch);pch++);
+						start=pch;
+						while(isdigit(*pch)) pch++;
 
 						int isDouble=0;
 
@@ -240,7 +241,7 @@ Token *tokenize(const char *pch){
 
 							if(!isdigit(*pch)) err("invalid double"); // at least one digit after .
 
-							for(start=pch++;isdigit(*pch);pch++);
+							while(isdigit(*pch)) pch++;
 						}
 
 						// with exponent
@@ -252,16 +253,16 @@ Token *tokenize(const char *pch){
 
 							if(!isdigit(*pch)) err("invalid exponent");
 
-							for(start=pch++;isdigit(*pch);pch++);
+							while(isdigit(*pch)) pch++;
 						}
 
-						char *text=extract(start,pch);
 						tk=addTk(isDouble ? DOUBLE:INT);
-						if(isDouble){
-							tk->d=atof(text);
-						}else{
-							tk->i=atoi(text);
-						}
+						char *text=extract(start,pch);
+						
+						if(isDouble==0) tk->i=atoi(text);
+						else tk->d=atof(text);
+
+						free(text);
 					}
 
 				else err("invalid char: %c (%d)",*pch,*pch);
@@ -288,7 +289,7 @@ void showTokens(const Token *tokens){
 			// constants
             case INT: printf("INT:%d", tk->i); break;
             case DOUBLE: printf("DOUBLE:%g", tk->d); break;
-            case CHAR: printf("CHAR:%c", tk->c); break;
+            case CHAR: printf("CHAR:%c", tk->i); break;
             case STRING: printf("STRING:%s", tk->text); break;
 
 			// delimiters

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "lexer.h"
 #include "utils.h"
@@ -175,7 +176,7 @@ Token *tokenize(const char *pch){
 				int length=0;
 
 				while(*pch!='"'){
-					if(*pch=='\0' || *pch=='r' || *pch=='\n') err("unterminated string constant");
+					if(*pch=='\0' || *pch=='\r' || *pch=='\n') err("unterminated string constant");
 		
 					if(*pch=='\\'){
 						pch++;
@@ -215,12 +216,12 @@ Token *tokenize(const char *pch){
 					if(strcmp(text,"char")==0)addTk(TYPE_CHAR);
 					else if(strcmp(text,"double")==0)addTk(TYPE_DOUBLE);
 					else if(strcmp(text,"else")==0)addTk(ELSE);
-					else if(strcmp(text,"if"))addTk(IF);
-					else if(strcmp(text,"int"))addTk(TYPE_INT);
-					else if(strcmp(text,"return"))addTk(RETURN);
-					else if(strcmp(text,"struct"))addTk(STRUCT);
-					else if(strcmp(text,"void"))addTk(VOID);
-					else if(strcmp(text,"while"))addTk(WHILE);
+					else if(strcmp(text,"if")==0)addTk(IF);
+					else if(strcmp(text,"int")==0)addTk(TYPE_INT);
+					else if(strcmp(text,"return")==0)addTk(RETURN);
+					else if(strcmp(text,"struct")==0)addTk(STRUCT);
+					else if(strcmp(text,"void")==0)addTk(VOID);
+					else if(strcmp(text,"while")==0)addTk(WHILE);
 					else{
 						tk=addTk(ID);
 						tk->text=text;
@@ -254,9 +255,13 @@ Token *tokenize(const char *pch){
 							for(start=pch++;isdigit(*pch);pch++);
 						}
 
-						tk=addTk(isDouble ? DOUBLE:INT);
 						char *text=extract(start,pch);
-						tk->text=text;
+						tk=addTk(isDouble ? DOUBLE:INT);
+						if(isDouble){
+							tk->d=atof(text);
+						}else{
+							tk->i=atoi(text);
+						}
 					}
 
 				else err("invalid char: %c (%d)",*pch,*pch);
@@ -266,6 +271,56 @@ Token *tokenize(const char *pch){
 
 void showTokens(const Token *tokens){
 	for(const Token *tk=tokens;tk;tk=tk->next){
-		printf("%d\n",tk->code);
+		switch(tk->code){
+            case ID: printf("ID:%s", tk->text); break;
+
+			// keywords
+            case TYPE_CHAR: printf("TYPE_CHAR"); break;
+            case TYPE_DOUBLE: printf("TYPE_DOUBLE"); break;
+            case ELSE: printf("ELSE"); break;
+            case IF: printf("IF"); break;
+            case TYPE_INT: printf("TYPE_INT"); break;
+            case RETURN: printf("RETURN"); break;
+            case STRUCT: printf("STRUCT"); break;
+            case VOID: printf("VOID"); break;
+            case WHILE: printf("WHILE"); break;
+
+			// constants
+            case INT: printf("INT:%d", tk->i); break;
+            case DOUBLE: printf("DOUBLE:%g", tk->d); break;
+            case CHAR: printf("CHAR:%c", tk->c); break;
+            case STRING: printf("STRING:%s", tk->text); break;
+
+			// delimiters
+            case COMMA: printf("COMMA"); break;
+            case SEMICOLON: printf("SEMICOLON"); break;
+            case LPAR: printf("LPAR"); break;
+            case RPAR: printf("RPAR"); break;
+            case LBRACKET: printf("LBRACKET"); break;
+            case RBRACKET: printf("RBRACKET"); break;
+            case LACC: printf("LACC"); break;
+            case RACC: printf("RACC"); break;
+            case END: printf("END"); break;
+
+			// operators
+            case ADD: printf("ADD"); break;
+            case SUB: printf("SUB"); break;
+            case MUL: printf("MUL"); break;
+            case DIV: printf("DIV"); break;
+            case DOT: printf("DOT"); break;
+            case AND: printf("AND"); break;
+            case OR: printf("OR"); break;
+            case NOT: printf("NOT"); break;
+            case ASSIGN: printf("ASSIGN"); break;
+            case EQUAL: printf("EQUAL"); break;
+            case NOTEQ: printf("NOTEQ"); break;
+            case LESS: printf("LESS"); break;
+            case LESSEQ: printf("LESSEQ"); break;
+            case GREATER: printf("GREATER"); break;
+            case GREATEREQ: printf("GREATEREQ"); break;
+
+            default: printf("UNKNOWN");
+        }
+			printf("\n");
 		}
 	}

@@ -232,6 +232,8 @@ Token *tokenize(const char *pch){
 						start=pch;
 						while(isdigit(*pch)) pch++;
 
+						if(isalpha(*pch) || *pch=='_') err("invalid id");
+						
 						int isDouble=0;
 
 						// double

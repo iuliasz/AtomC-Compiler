@@ -260,7 +260,10 @@ Token *tokenize(const char *pch){
 						char *text=extract(start,pch);
 						
 						if(isDouble==0) tk->i=atoi(text);
-						else tk->d=atof(text);
+						else {
+							tk->originalText=strdup(text);
+							tk->d=atof(text);
+						}
 
 						free(text);
 					}
@@ -288,7 +291,7 @@ void showTokens(const Token *tokens){
 
 			// constants
             case INT: printf("INT:%d", tk->i); break;
-            case DOUBLE: printf("DOUBLE:%g", tk->d); break;
+            case DOUBLE: printf("DOUBLE:%s", tk->originalText); break;
             case CHAR: printf("CHAR:%c", tk->i); break;
             case STRING: printf("STRING:%s", tk->text); break;
 

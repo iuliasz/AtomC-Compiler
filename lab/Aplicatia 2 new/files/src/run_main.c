@@ -3,9 +3,14 @@
 #include "lexer.h"
 #include "utils.h"
 
-int main(){
-	char *buffer=loadFile("tests/testlex.c");
+int main(int argc, char **argv){
 
+    if(argc!=2){
+        fprintf(stderr, "Needs input file");
+        return 1;
+    }
+
+	char *buffer=loadFile(argv[1]);
     Token *tokens=tokenize(buffer);
 
     showTokens(tokens);

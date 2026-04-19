@@ -46,6 +46,56 @@ bool typeBase(){
 	return false;
 	}
 
+// arrayDecl: LBRACKET INT? RBRACKET
+bool arrayDecl(){
+	Token *start=iTk;
+	if(consume(LBRACKET)){
+		cosnume(INT);
+		if(consume(RBRACKET)) return true;
+	}
+	iTk=start;
+
+	return false;
+}
+
+// varDef: typeBase ID arrayDecl? SEMICOLON
+bool varDef(){
+	Token *start=iTk;
+	if(typeBase()){
+		if(consume(ID)){
+			arrayDecl();
+
+			if(consume(SEMICOLON)) return true;
+		}
+	}
+	iTk=start;
+
+	return false;
+}
+
+// structDef: STRUCT ID LACC varDef* RACC SEMICOLON
+bool structDef(){
+		Token *start=iTk;
+		if(consume(STRUCT)){
+			if(consume(ID)){
+				if(consume(LACC)){
+					for(;;){
+						if(varDef()){}
+						else break;
+					}
+				}
+				if(consume(RACC)){
+					if(consume(SEMICOLON)){
+						return true;
+					}
+				}
+			}
+		}
+	iTk=start;
+
+	return false;
+}
+
 // unit: ( structDef | fnDef | varDef )* END
 bool unit(){
 	for(;;){
@@ -59,6 +109,9 @@ bool unit(){
 		}
 	return false;
 	}
+
+
+
 
 void parse(Token *tokens){
 	iTk=tokens;

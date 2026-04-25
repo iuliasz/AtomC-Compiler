@@ -29,6 +29,7 @@ bool consume(int code){
 
 // typeBase: TYPE_INT | TYPE_DOUBLE | TYPE_CHAR | STRUCT ID
 bool typeBase(){
+	Token *start=iTk;
 	if(consume(TYPE_INT)){
 		return true;
 		}
@@ -43,14 +44,15 @@ bool typeBase(){
 			return true;
 			}
 		}
-	return false;
+		iTk=start;
+		return false;
 	}
 
 // arrayDecl: LBRACKET INT? RBRACKET
 bool arrayDecl(){
 	Token *start=iTk;
 	if(consume(LBRACKET)){
-		cosnume(INT);
+		consume(INT);
 		if(consume(RBRACKET)) return true;
 	}
 	iTk=start;
@@ -68,24 +70,23 @@ bool fnParam(){
 		}
 	}
 	iTk=start;
-
 	return false;
 }
 
-// fnDef: ( typeBase | VOID ) ID
-// LPAR ( fnParam ( COMMA fnParam )* )? RPAR
-// stmCompound
+
+// fnDef: ( typeBase | VOID ) ID LPAR ( fnParam ( COMMA fnParam )* )? RPAR stmCompound
 bool fnDef(){
 	Token *start=iTk;
-	if(typeBase() || consume(VOID)){
+	if(typeBase()){
 		if(consume(ID)){
 			if(consume(LPAR)){
 				if(fnParam()){
-					for(;;){
-						if(consume(COMMA)){
-							if(fnParam()){}
-							else break;
-						}else break;
+					while(consume(COMMA)){
+						if(fnParam()){
+						}else{
+							iTk=start;
+							return false;
+						}
 					}
 				}
 				if(consume(RPAR)){
@@ -97,7 +98,27 @@ bool fnDef(){
 		}
 	}
 	iTk=start;
-
+	if(consume(VOID)){
+		if(consume(ID)){
+			if(consume(LPAR)){
+				if(fnParam()){
+					while(consume(COMMA)){
+						if(fnParam()){
+						}else{
+							iTk=start;
+							return false;
+						}
+					}
+				}
+				if(consume(RPAR)){
+					if(stmCompound()){
+						return true;
+					}
+				}
+			}
+		}
+	}
+	iTk=start;
 	return false;
 }
 
@@ -112,7 +133,6 @@ bool varDef(){
 		}
 	}
 	iTk=start;
-
 	return false;
 }
 
@@ -122,20 +142,17 @@ bool structDef(){
 		if(consume(STRUCT)){
 			if(consume(ID)){
 				if(consume(LACC)){
-					for(;;){
-						if(varDef()){}
-						else break;
-					}
-				}
-				if(consume(RACC)){
-					if(consume(SEMICOLON)){
-						return true;
+					while(varDef()){}
+				
+					if(consume(RACC)){
+						if(consume(SEMICOLON)){
+							return true;
+						}
 					}
 				}
 			}
 		}
 	iTk=start;
-
 	return false;
 }
 
@@ -171,7 +188,10 @@ bool stm(){
 					if(stm()){
 						if(consume(ELSE)){
 							if(stm()){}
-							else return false;
+							else{
+								iTk=start;
+								return false;
+							}
 						}
 						return true;
 					}
@@ -204,7 +224,6 @@ bool stm(){
 		return true;
 	}
 	iTk=start;
-
 	return false;
 }
 
@@ -213,15 +232,15 @@ bool stmCompound(){
 	Token *start=iTk;
 	if(consume(LACC)){
 		for(;;){
-			if(varDef() || stm()){
-				if(consume(RACC)){
-					return true;
-				}
-			}
+			if(varDef()){}
+			else if(stm()){}
+			else break;
+		}
+		if(consume(RACC)){
+			return true;
 		}
 	}
 	iTk=start;
-
 	return false;
 }
 
@@ -232,11 +251,11 @@ bool expr(){
 }
 
 // exprAssign: exprUnary ASSIGN exprAssign | exprOr
-bool exprAsssign(){
+bool exprAssign(){
 	Token *start=iTk;
 	if(exprUnary()){
 		if(consume(ASSIGN)){
-			if(exprAsssign()){
+			if(exprAssign()){
 				return true;
 			}
 		}
@@ -246,7 +265,6 @@ bool exprAsssign(){
 		return true;
 	}
 	iTk=start;
-
 	return false;
 }
 
@@ -319,7 +337,17 @@ bool exprEq(){
 
 bool exprEqPrim(){
 	Token *start=iTk;
-	if(consume(EQUAL) || consume(NOTEQ)){
+	if(consume(EQUAL)){
+		if(exprRel()){
+			if(exprEqPrim()){
+				return true;
+			}
+		}
+		iTk=start;
+		return false;
+	}
+	iTk=start;
+	if(consume(NOTEQ)){
 		if(exprRel()){
 			if(exprEqPrim()){
 				return true;
@@ -346,7 +374,37 @@ bool exprRel(){
 
 bool exprRelPrim(){
 	Token *start=iTk;
-	if(consume(LESS) || consume(LESSEQ) || consume(GREATER) || consume(GREATEREQ)){
+	if(consume(LESS)){
+		if(exprAdd()){
+			if(exprRelPrim()){
+				return true;
+			}
+		}
+		iTk=start;
+		return false;
+	}
+	iTk=start;
+	if(consume(LESSEQ)){
+		if(exprAdd()){
+			if(exprRelPrim()){
+				return true;
+			}
+		}
+		iTk=start;
+		return false;
+	}
+	iTk=start;
+	if(consume(GREATER)){
+		if(exprAdd()){
+			if(exprRelPrim()){
+				return true;
+			}
+		}
+		iTk=start;
+		return false;
+	}
+	iTk=start;
+	if(consume(GREATEREQ)){
 		if(exprAdd()){
 			if(exprRelPrim()){
 				return true;
@@ -373,7 +431,17 @@ bool exprAdd(){
 
 bool exprAddPrim(){
 	Token *start=iTk;
-	if(consume(ADD) || consume(SUB)){
+	if(consume(ADD)){
+		if(exprMul()){
+			if(exprAddPrim()){
+				return true;
+			}
+		}
+		iTk=start;
+		return false;
+	}
+	iTk=start;
+	if(consume(SUB)){
 		if(exprMul()){
 			if(exprAddPrim()){
 				return true;
@@ -400,7 +468,17 @@ bool exprMul(){
 
 bool exprMulPrim(){
 	Token *start=iTk;
-	if(consume(MUL) || consume(DIV)){
+	if(consume(MUL)){
+		if(exprCast()){
+			if(exprMulPrim()){
+				return true;
+			}
+		}
+		iTk=start;
+		return false;
+	}
+	iTk=start;
+	if(consume(DIV)){
 		if(exprCast()){
 			if(exprMulPrim()){
 				return true;
@@ -436,7 +514,13 @@ bool exprCast(){
 // exprUnary: ( SUB | NOT ) exprUnary | exprPostfix
 bool exprUnary(){
 	Token *start=iTk;
-	if(consume(SUB) || consume(NOT)){
+	if(consume(SUB)){
+		if(exprUnary()){
+			return true;
+		}
+	}
+	iTk=start;
+	if(consume(NOT)){
 		if(exprUnary()){
 			return true;
 		}
@@ -498,21 +582,37 @@ bool exprPrimary(){
 	if(consume(ID)){
 		if(consume(LPAR)){
 			if(expr()){
-				for(;;){
-					if(consume(COMMA)){
-						if(expr){}
-						else return false;
+				while(consume(COMMA)){
+					if(expr()){}
+					else{
+						iTk=start;
+						return false;
 					}
 				}
 			}
 			if(consume(RPAR)){
 				return true;
 			}
+			iTk=start;
+			return false;
 		}
+		return true;
 	}
 	iTk=start;
-	if(consume(INT) | consume(DOUBLE) | consume(CHAR) | consume(STRING)){
-		return true
+	if(consume(INT)){
+		return true;
+	}
+	iTk=start;
+	if(consume(DOUBLE)){
+		return true;
+	}
+	iTk=start;
+	if(consume(CHAR)){
+		return true;
+	}
+	iTk=start;
+	if(consume(STRING)){
+		return true;
 	}
 	iTk=start;
 	if(consume(LPAR)){

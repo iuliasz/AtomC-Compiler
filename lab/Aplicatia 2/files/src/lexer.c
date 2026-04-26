@@ -293,7 +293,7 @@ void showTokens(const Token *tokens){
 
 			// constants
 			case INT: printf("%d\tINT:%d", tk->line, tk->i); break;
-			case DOUBLE: printf("%d\tDOUBLE:%g", tk->line, tk->d); break;
+			case DOUBLE: printf("%d\tDOUBLE:%.2f", tk->line, tk->d); break;
 			case CHAR: printf("%d\tCHAR:%c", tk->line, tk->c); break;
 			case STRING: printf("%d\tSTRING:%s", tk->line, tk->text); break;
 

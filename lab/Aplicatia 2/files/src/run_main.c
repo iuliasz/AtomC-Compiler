@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexer.h"
+#include "parser.h"
 #include "utils.h"
 
 int main(int argc, char **argv){
@@ -15,5 +16,8 @@ int main(int argc, char **argv){
 
     showTokens(tokens);
 
+    parse(tokens);
+    printf("syntax ok\n");
+    
 	return 0;
 }

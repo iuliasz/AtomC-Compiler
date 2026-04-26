@@ -16,8 +16,9 @@ int main(int argc, char **argv){
 
     showTokens(tokens);
 
+    printf("\n");
     parse(tokens);
-    printf("syntax ok\n");
+    printf("\nsyntax ok\n");
     
 	return 0;
 }

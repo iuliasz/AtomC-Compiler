@@ -29,6 +29,8 @@ bool exprPostfix(void);
 bool exprPostfixPrim(void);
 bool exprPrimary(void);
 
+
+
 void tkerr(const char *fmt,...){
 	fprintf(stderr,"error in line %d: ",iTk->line);
 	va_list va;
@@ -39,17 +41,70 @@ void tkerr(const char *fmt,...){
 	exit(EXIT_FAILURE);
 	}
 
+const char *tkCodeName(int code){
+    switch(code){
+        case ID: return "ID";
+        case TYPE_INT: return "TYPE_INT";
+        case TYPE_DOUBLE: return "TYPE_DOUBLE";
+        case TYPE_CHAR: return "TYPE_CHAR";
+        case STRUCT: return "STRUCT";
+        case IF: return "IF";
+        case ELSE: return "ELSE";
+        case WHILE: return "WHILE";
+        case RETURN: return "RETURN";
+        case ADD: return "ADD";
+        case SUB: return "SUB";
+        case MUL: return "MUL";
+        case DIV: return "DIV";
+        case ASSIGN: return "ASSIGN";
+        case EQUAL: return "EQUAL";
+        case NOTEQ: return "NOTEQ";
+        case LESS: return "LESS";
+        case LESSEQ: return "LESSEQ";
+        case GREATER: return "GREATER";
+        case GREATEREQ: return "GREATEREQ";
+        case AND: return "AND";
+        case OR: return "OR";
+        case NOT: return "NOT";
+        case LPAR: return "LPAR";
+        case RPAR: return "RPAR";
+        case LBRACKET: return "LBRACKET";
+        case RBRACKET: return "RBRACKET";
+        case LACC: return "LACC";
+        case RACC: return "RACC";
+        case COMMA: return "COMMA";
+        case SEMICOLON: return "SEMICOLON";
+        case INT: return "INT";
+        case DOUBLE: return "DOUBLE";
+        case CHAR: return "CHAR";
+        case STRING: return "STRING";
+        case VOID: return "VOID";
+        case END: return "END";
+        default: return "UNKNOWN";
+    }
+}
+
 bool consume(int code){
-	if(iTk->code==code){
-		consumedTk=iTk;
-		iTk=iTk->next;
-		return true;
-		}
-	return false;
-	}
+    printf("consume(%s)", tkCodeName(code));
+
+    if(iTk->code == code){
+        consumedTk = iTk;
+        iTk = iTk->next;
+        printf(" => consumed\n");
+        return true;
+    }
+
+    printf(" => found %s\n", tkCodeName(iTk->code));
+    return false;
+}
+
+void rule(const char* name){
+	printf("# %s\n", name);
+}
 
 // typeBase: TYPE_INT | TYPE_DOUBLE | TYPE_CHAR | STRUCT ID
 bool typeBase(){
+	rule("typeBase");
 	Token *start=iTk;
 	if(consume(TYPE_INT)){
 		return true;
@@ -71,6 +126,7 @@ bool typeBase(){
 
 // arrayDecl: LBRACKET INT? RBRACKET
 bool arrayDecl(){
+	rule("arrayDecl");
 	Token *start=iTk;
 	if(consume(LBRACKET)){
 		consume(INT);
@@ -84,6 +140,7 @@ bool arrayDecl(){
 
 // fnParam: typeBase ID arrayDecl?
 bool fnParam(){
+	rule("fnParam");
 	Token *start=iTk;
 	if(typeBase()){
 		if(consume(ID)){
@@ -99,6 +156,7 @@ bool fnParam(){
 
 // fnDef: ( typeBase | VOID ) ID LPAR ( fnParam ( COMMA fnParam )* )? RPAR stmCompound
 bool fnDef(){
+	rule("fnDef");
 	Token *start=iTk;
 	if(typeBase()){
 		if(consume(ID)){
@@ -151,6 +209,7 @@ bool fnDef(){
 
 // varDef: typeBase ID arrayDecl? SEMICOLON
 bool varDef(){
+	rule("varDef");
 	Token *start=iTk;
 	if(typeBase()){
 		if(consume(ID)){
@@ -168,6 +227,7 @@ bool varDef(){
 
 // structDef: STRUCT ID LACC varDef* RACC SEMICOLON
 bool structDef(){
+	rule("structDef");
 		Token *start=iTk;
 		if(consume(STRUCT)){
 			if(consume(ID)){
@@ -182,7 +242,8 @@ bool structDef(){
 					}
 					tkerr("missing } in struct definition");
 				}
-				tkerr("missing { after struct name");
+				iTk=start;
+				return false;
 			}
 			tkerr("missing struct name");
 		}
@@ -192,6 +253,7 @@ bool structDef(){
 
 // unit: ( structDef | fnDef | varDef )* END
 bool unit(){
+	rule("unit");
 	for(;;){
 		if(structDef()){}
 		else if(fnDef()){}
@@ -211,6 +273,7 @@ bool unit(){
 // | RETURN expr? SEMICOLON
 // | expr? SEMICOLON	
 bool stm(){
+	rule("stm");
 	Token *start=iTk;
 	if(stmCompound()){
 		return true;
@@ -272,6 +335,7 @@ bool stm(){
 
 // stmCompound: LACC ( varDef | stm )* RACC
 bool stmCompound(){
+	rule("stmCompound");
 	Token *start=iTk;
 	if(consume(LACC)){
 		for(;;){
@@ -291,11 +355,13 @@ bool stmCompound(){
 //////////
 // expr: exprAssign
 bool expr(){
+	rule("expr");
 	return exprAssign();
 }
 
 // exprAssign: exprUnary ASSIGN exprAssign | exprOr
 bool exprAssign(){
+	rule("exprAssign");
 	Token *start=iTk;
 	if(exprUnary()){
 		if(consume(ASSIGN)){
@@ -327,6 +393,7 @@ bool exprOr(){
 }
 
 bool exprOrPrim(){
+	rule("exprOrPrim");
 	if(consume(OR)){
 		if(exprAnd()){
 			if(exprOrPrim()){
@@ -352,6 +419,7 @@ bool exprAnd(){
 }
 
 bool exprAndPrim(){
+	rule("exprAndPrim");
 	if(consume(AND)){
 		if(exprEq()){
 			if(exprAndPrim()){
@@ -377,6 +445,7 @@ bool exprEq(){
 }
 
 bool exprEqPrim(){
+	rule("exprEqPrim");
 	if(consume(EQUAL)){
 		if(exprRel()){
 			if(exprEqPrim()){
@@ -410,6 +479,7 @@ bool exprRel(){
 }
 
 bool exprRelPrim(){
+	rule("exprRelPrim");
 	if(consume(LESS)){
 		if(exprAdd()){
 			if(exprRelPrim()){
@@ -459,6 +529,7 @@ bool exprAdd(){
 }
 
 bool exprAddPrim(){
+	rule("exprAddPrim");
 	if(consume(ADD)){
 		if(exprMul()){
 			if(exprAddPrim()){
@@ -494,6 +565,7 @@ bool exprMul(){
 }
 
 bool exprMulPrim(){
+	rule("exprMulPrim");
 	if(consume(MUL)){
 		if(exprCast()){
 			if(exprMulPrim()){
@@ -517,6 +589,7 @@ bool exprMulPrim(){
 
 // exprCast: LPAR typeBase arrayDecl? RPAR exprCast | exprUnary
 bool exprCast(){
+	rule("exprCast");
 	Token *start=iTk;
 	if(consume(LPAR)){
 		 if(iTk->code == STRUCT){
@@ -545,6 +618,7 @@ bool exprCast(){
 
 // exprUnary: ( SUB | NOT ) exprUnary | exprPostfix
 bool exprUnary(){
+	rule("exprUnary");
 	Token *start=iTk;
 	if(consume(SUB)){
 		if(exprUnary()){
@@ -584,6 +658,7 @@ bool exprPostfix(){
 }
 
 bool exprPostfixPrim(){
+	rule("exprPostfixPrim");
 	if(consume(LBRACKET)){
 		if(expr()){
 			if(consume(RBRACKET)){
@@ -609,6 +684,7 @@ bool exprPostfixPrim(){
 // exprPrimary: ID ( LPAR ( expr ( COMMA expr )* )? RPAR )?
 // | INT | DOUBLE | CHAR | STRING | LPAR expr RPAR
 bool exprPrimary(){
+	rule("exprPrimary");
 	Token *start=iTk;
 	if(consume(ID)){
 		if(consume(LPAR)){

@@ -74,6 +74,7 @@ const char *tkCodeName(int code){
         case RACC: return "RACC";
         case COMMA: return "COMMA";
         case SEMICOLON: return "SEMICOLON";
+		case DOT: return "DOT";
         case INT: return "INT";
         case DOUBLE: return "DOUBLE";
         case CHAR: return "CHAR";
@@ -158,15 +159,26 @@ bool fnParam(){
 bool fnDef(){
 	rule("fnDef");
 	Token *start=iTk;
+	
+	if(iTk->code == ID && iTk->next && iTk->next->code == ID && iTk->next->next && iTk->next->next->code == LPAR){
+		tkerr("invalid return type");
+	}
 	if(typeBase()){
 		if(consume(ID)){
 			if(consume(LPAR)){
-				if(fnParam()){
-					while(consume(COMMA)){
-						if(fnParam()){}
-						else{
-							tkerr("missing parameter after ,");
+				if(iTk->code != RPAR){
+					if(fnParam()){
+						while(consume(COMMA)){
+							if(fnParam()){}
+							else{
+								tkerr("missing parameter after ,");
+							}
 						}
+					}else{
+						if(iTk->code == ID){
+							tkerr("invalid parameter type");
+						}
+						tkerr("invalid function parameter");
 					}
 				}
 				if(consume(RPAR)){
@@ -183,12 +195,19 @@ bool fnDef(){
 	if(consume(VOID)){
 		if(consume(ID)){
 			if(consume(LPAR)){
-				if(fnParam()){
-					while(consume(COMMA)){
-						if(fnParam()){}
-						else{
-							tkerr("missing parameter after ,");
+				if(iTk->code != RPAR){
+					if(fnParam()){
+						while(consume(COMMA)){
+							if(fnParam()){}
+							else{
+								tkerr("missing parameter after ,");
+							}
 						}
+					}else{
+						if(iTk->code == ID){
+							tkerr("invalid parameter type");
+						}
+						tkerr("invalid function parameter");
 					}
 				}
 				if(consume(RPAR)){
@@ -220,7 +239,15 @@ bool varDef(){
 			}
 			tkerr("missing ; after variable definition");
 		}
+		tkerr("missing variable name after type");
 	}
+	if(iTk->code == ID && iTk->next && iTk->next->code == ID && iTk->next->next && iTk->next->next->code == ID){
+		tkerr("invalid variable type");
+	}
+	 if(iTk->code == ID && iTk->next && iTk->next->code == ID){
+        tkerr("invalid variable type");
+    }
+
 	iTk=start;
 	return false;
 }
@@ -325,9 +352,11 @@ bool stm(){
 		tkerr("missing ; after return");
 	}
 	iTk=start;
-	expr();
-	if(consume(SEMICOLON)){
-		return true;
+	if(expr()){
+		if(consume(SEMICOLON)){
+			return true;
+		}
+		tkerr("invalid statement or missing ;");
 	}
 	iTk=start;
 	return false;

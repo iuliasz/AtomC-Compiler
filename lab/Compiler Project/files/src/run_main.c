@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "lexer.h"
 #include "parser.h"
 #include "utils.h"
+#include "ad.h"
 
 int main(int argc, char **argv){
 
@@ -16,9 +18,11 @@ int main(int argc, char **argv){
 
     showTokens(tokens);
 
-    printf("\n");
+    pushDomain();
     parse(tokens);
-    printf("\nsyntax ok\n");
+    printf("\n\n");
+    showDomain(symTable,"global");
+    dropDomain();
     
 	return 0;
 }

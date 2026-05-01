@@ -1,4 +1,4 @@
-struct Pt{
+struct Pt
 	int x;
 	int y;
 	};
@@ -19,7 +19,7 @@ int len(char s[]){
 void main(){
 	int i;
 	i=10;
-	whle(i!=0){
+	while(i!=0){
 		puti(i);
 		i=i/2;
 		}

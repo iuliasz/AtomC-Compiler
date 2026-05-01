@@ -171,12 +171,12 @@ bool fnDef(){
 						while(consume(COMMA)){
 							if(fnParam()){}
 							else{
-								tkerr("missing parameter after ,");
+								tkerr("invalid or missing parameter after ,");
 							}
 						}
 					}else{
 						if(iTk->code == ID){
-							tkerr("invalid parameter type");
+							tkerr("invalid or missing parameter type");
 						}
 						tkerr("invalid function parameter");
 					}
@@ -269,6 +269,9 @@ bool structDef(){
 					}
 					tkerr("missing } in struct definition");
 				}
+				if(iTk->code == TYPE_INT || iTk->code == TYPE_DOUBLE || iTk->code == TYPE_CHAR || iTk->code == STRUCT || iTk->code == RACC){
+					tkerr("missing { after struct name");
+				}
 				iTk=start;
 				return false;
 			}
@@ -357,6 +360,9 @@ bool stm(){
 			return true;
 		}
 		tkerr("invalid statement or missing ;");
+	}
+	if(consume(SEMICOLON)){
+		return true;
 	}
 	iTk=start;
 	return false;

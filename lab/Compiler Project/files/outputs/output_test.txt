@@ -1220,17 +1220,17 @@ consume(END) => consumed
 
 
 // domain: global
-int x;	// size=4, mem=0000023B6B771C30
-char y;	// size=1, mem=0000023B6B771AF0
-double z;	// size=8, mem=0000023B6B771B70
-double p[100];	// size=800, mem=0000023B6B773650
+int x;	// size=4, mem=000001E413420B40
+char y;	// size=1, mem=000001E413420A10
+double z;	// size=8, mem=000001E413420AD0
+double p[100];	// size=800, mem=000001E4134245B0
 struct S1{
 	int i;	// size=4, idx=0
 	double d[2];	// size=16, idx=4
 	char x;	// size=1, idx=20
 	};	// size=21
-struct S1 p1;	// size=21, mem=0000023B6B769E70
-struct S1 vp[10];	// size=210, mem=0000023B6B766290
+struct S1 p1;	// size=21, mem=000001E41341A880
+struct S1 vp[10];	// size=210, mem=000001E4134166C0
 double sum(double x[] /*size=8, idx=0*/, int n /*size=4, idx=1*/){
 	double r;	// size=8, idx=0
 	int i;	// size=4, idx=1

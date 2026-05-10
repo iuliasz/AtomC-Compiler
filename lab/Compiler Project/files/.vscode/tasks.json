@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build all src files",
+            "type": "shell",
+            "command": "C:\\Program Files\\Git\\bin\\bash.exe",
+            "args": [
+                "-lc",
+                "mkdir -p bin && gcc -g -Wall -Wextra -std=c11 src/*.c -o bin/run_main_debug.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "run chosen test and tee stdout",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-Command",
+                "& '${workspaceFolder}/bin/run_main_debug.exe' '${input:testFile}' | Tee-Object -FilePath '${workspaceFolder}/outputs/output_test.txt'"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "build all src files",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "testFile",
+            "type": "promptString",
+            "description": "Test file to pass to run_main_debug.exe",
+            "default": "${workspaceFolder}/tests/testat.c"
+        }
+    ]
+}

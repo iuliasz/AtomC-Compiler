@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug run_main.c (choose test file)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/run_main_debug.exe",
+            "args": [
+                "${input:testFile}"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb",
+            "preLaunchTask": "build all src files"
+        },
+        {
+            "name": "Run run_main.c with tee stdout (choose test file)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& '${workspaceFolder}/bin/run_main_debug.exe' '${input:testFile}' | Tee-Object -FilePath '${workspaceFolder}/outputs/output_test.txt'\"",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build all src files"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "testFile",
+            "type": "promptString",
+            "description": "Test file to pass to run_main_debug.exe",
+            "default": "${workspaceFolder}/tests/testat.c"
+        }
+    ]
+}

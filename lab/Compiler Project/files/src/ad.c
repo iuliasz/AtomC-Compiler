@@ -20,21 +20,16 @@ int typeBaseSize(Type *t) {
         return 0;
     default: { // TB_STRUCT
         int size = 0;
-        for (Symbol *m = t->s->structMembers; m; m = m->next) {
+        for (Symbol *m = t->s->structMembers; m; m = m->next)
             size += typeSize(&m->type);
-        }
         return size;
     }
     }
 }
 
 int typeSize(Type *t) {
-    if (t->n < 0) {
-        return typeBaseSize(t);
-    }
-    if (t->n == 0) {
-        return sizeof(void *);
-    }
+    if (t->n < 0) return typeBaseSize(t);
+    if (t->n == 0) return sizeof(void *);
     return t->n * typeBaseSize(t);
 }
 
@@ -66,9 +61,8 @@ Symbol *dupSymbol(Symbol *symbol) {
 Symbol *addSymbolToList(Symbol **list, Symbol *s) {
     Symbol *iter = *list;
     if (iter) {
-        while (iter->next) {
+        while (iter->next)
             iter = iter->next;
-        }
         iter->next = s;
     } else {
         *list = s;
@@ -78,18 +72,15 @@ Symbol *addSymbolToList(Symbol **list, Symbol *s) {
 
 int symbolsLen(Symbol *list) {
     int n = 0;
-    for (; list; list = list->next) {
+    for (; list; list = list->next)
         n++;
-    }
     return n;
 }
 
 void freeSymbol(Symbol *s) {
     switch (s->kind) {
     case SK_VAR:
-        if (!s->owner) {
-            free(s->varMem);
-        }
+        if (!s->owner) free(s->varMem);
         break;
     case SK_FN:
         freeSymbols(s->fn.params);
@@ -134,25 +125,17 @@ void showNamedType(Type *t, const char *name) {
     default: // TB_STRUCT
         printf("struct %s", t->s->name);
     }
-    if (name) {
-        printf(" %s", name);
-    }
-    if (t->n == 0) {
-        printf("[]");
-    } else if (t->n > 0) {
-        printf("[%d]", t->n);
-    }
+    if (name) printf(" %s", name);
+    if (t->n == 0) printf("[]");
+    else if (t->n > 0) printf("[%d]", t->n);
 }
 
 void showSymbol(Symbol *s) {
     switch (s->kind) {
     case SK_VAR:
         showNamedType(&s->type, s->name);
-        if (s->owner) {
-            printf(";\t// size=%d, idx=%d\n", typeSize(&s->type), s->varIdx);
-        } else {
-            printf(";\t// size=%d, mem=%p\n", typeSize(&s->type), s->varMem);
-        }
+        if (s->owner) printf(";\t// size=%d, idx=%d\n", typeSize(&s->type), s->varIdx);
+        else printf(";\t// size=%d, mem=%p\n", typeSize(&s->type), s->varMem);
         break;
     case SK_PARAM: {
         showNamedType(&s->type, s->name);
@@ -163,9 +146,7 @@ void showSymbol(Symbol *s) {
         printf("(");
         bool next = false;
         for (Symbol *param = s->fn.params; param; param = param->next) {
-            if (next) {
-                printf(", ");
-            }
+            if (next) printf(", ");
             showSymbol(param);
             next = true;
         }
@@ -189,27 +170,21 @@ void showSymbol(Symbol *s) {
 
 void showDomain(Domain *d, const char *name) {
     printf("// domain: %s\n", name);
-    for (Symbol *s = d->symbols; s; s = s->next) {
+    for (Symbol *s = d->symbols; s; s = s->next)
         showSymbol(s);
-    }
     puts("\n");
 }
 
 Symbol *findSymbolInDomain(Domain *d, const char *name) {
-    for (Symbol *s = d->symbols; s; s = s->next) {
-        if (!strcmp(s->name, name)) {
-            return s;
-        }
-    }
+    for (Symbol *s = d->symbols; s; s = s->next)
+        if (!strcmp(s->name, name)) return s;
     return NULL;
 }
 
 Symbol *findSymbol(const char *name) {
     for (Domain *d = symTable; d; d = d->parent) {
         Symbol *s = findSymbolInDomain(d, name);
-        if (s) {
-            return s;
-        }
+        if (s) return s;
     }
     return NULL;
 }

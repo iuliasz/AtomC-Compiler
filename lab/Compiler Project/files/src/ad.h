@@ -50,7 +50,8 @@ struct Symbol {
     //		- a function for parameters/variables local to that function
     Symbol *owner;
     Symbol *next; // the link to the next symbol in list
-    union {       // specific data fo each kind of symbol
+
+    union { // specific data fo each kind of symbol
         // the index in fn.locals for local vars
         // the index in struct for struct members
         int varIdx;
@@ -60,10 +61,10 @@ struct Symbol {
         int paramIdx;
         // the members of a struct
         Symbol *structMembers;
+
         struct {
-            Symbol *params; // the parameters of a function
-            Symbol
-                *locals; // all local vars of a function, including the ones from its inner domains
+            Symbol *params;     // the parameters of a function
+            Symbol *locals;     // all local vars of a function, including the ones from its inner domains
             void (*extFnPtr)(); // !=NULL for extern functions
             Instr *instr;       // used if extFnPtr==NULL
         } fn;

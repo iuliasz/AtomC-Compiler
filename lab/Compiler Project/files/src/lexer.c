@@ -18,11 +18,8 @@ Token *addTk(int code) {
     tk->code = code;
     tk->line = line;
     tk->next = NULL;
-    if (lastTk) {
-        lastTk->next = tk;
-    } else {
-        tokens = tk;
-    }
+    if (lastTk) lastTk->next = tk;
+    else tokens = tk;
     lastTk = tk;
     return tk;
 }
@@ -49,9 +46,7 @@ Token *tokenize(const char *pch) {
             break;
         case '\r': // handles different kinds of newlines (Windows: \r\n, Linux: \n, MacOS, OS X: \r
                    // or \n)
-            if (pch[1] == '\n') {
-                pch++;
-            }
+            if (pch[1] == '\n') pch++;
             // fallthrough to \n
         case '\n':
             line++;
@@ -111,9 +106,8 @@ Token *tokenize(const char *pch) {
         case '/':
             if (pch[1] == '/') {
                 pch += 2;
-                while (*pch != '\n' && *pch != '\r' && *pch != '\0') {
+                while (*pch != '\n' && *pch != '\r' && *pch != '\0')
                     pch++; // linecomment
-                }
             } else {
                 addTk(DIV);
                 pch++;
@@ -182,9 +176,7 @@ Token *tokenize(const char *pch) {
 
             char c;
 
-            if (*pch == '\'' || *pch == '\0' || *pch == '\r' || *pch == '\n') {
-                err("invalid char constant");
-            }
+            if (*pch == '\'' || *pch == '\0' || *pch == '\r' || *pch == '\n') err("invalid char constant");
 
             if (*pch == '\\') {
                 pch++;
@@ -232,9 +224,7 @@ Token *tokenize(const char *pch) {
                 pch++;
             }
 
-            if (*pch != '\'') {
-                err("misssing closing '");
-            }
+            if (*pch != '\'') err("misssing closing '");
             pch++;
 
             tk = addTk(CHAR);
@@ -249,9 +239,7 @@ Token *tokenize(const char *pch) {
             int length = 0;
 
             while (*pch != '"') {
-                if (*pch == '\0' || *pch == '\r' || *pch == '\n') {
-                    err("unterminated string constant");
-                }
+                if (*pch == '\0' || *pch == '\r' || *pch == '\n') err("unterminated string constant");
 
                 if (*pch == '\\') {
                     pch++;
@@ -338,9 +326,8 @@ Token *tokenize(const char *pch) {
                 //  constants
             } else if (isdigit(*pch)) {
                 start = pch;
-                while (isdigit(*pch)) {
+                while (isdigit(*pch))
                     pch++;
-                }
 
                 int isDouble = 0;
 
@@ -349,13 +336,10 @@ Token *tokenize(const char *pch) {
                     isDouble = 1;
                     pch++;
 
-                    if (!isdigit(*pch)) {
-                        err("invalid double"); // at least one digit after .
-                    }
+                    if (!isdigit(*pch)) err("invalid double"); // at least one digit after .
 
-                    while (isdigit(*pch)) {
+                    while (isdigit(*pch))
                         pch++;
-                    }
                 }
 
                 // with exponent
@@ -363,22 +347,15 @@ Token *tokenize(const char *pch) {
                     isDouble = 1;
                     pch++;
 
-                    if (*pch == '+' || *pch == '-') {
-                        pch++;
-                    }
+                    if (*pch == '+' || *pch == '-') pch++;
 
-                    if (!isdigit(*pch)) {
-                        err("invalid exponent");
-                    }
+                    if (!isdigit(*pch)) err("invalid exponent");
 
-                    while (isdigit(*pch)) {
+                    while (isdigit(*pch))
                         pch++;
-                    }
                 }
 
-                if (isalpha(*pch) || *pch == '_') {
-                    err("invalid id");
-                }
+                if (isalpha(*pch) || *pch == '_') err("invalid id");
 
                 tk = addTk(isDouble ? DOUBLE : INT);
                 char *text = extract(start, pch);

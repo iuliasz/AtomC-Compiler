@@ -56,6 +56,7 @@ typedef struct Token {
     int code; // ID, TYPE_CHAR, ...
     int line; // the line from the input file
     char *originalText;
+
     union {
         char *text; // the chars for ID, STRING (dynamically allocated)
         int i;      // the value for INT

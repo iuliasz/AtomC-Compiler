@@ -1,3 +1,3 @@
-// abcdef
-int a;
-int b; // yes
+//abcdef
+int a;  int b;  //yes
+

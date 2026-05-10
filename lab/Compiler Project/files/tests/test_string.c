@@ -1,4 +1,4 @@
 "abc\a"
-    "something"
-    "def\tghi"
-    //"""
+"something"
+"def\tghi"
+//"""

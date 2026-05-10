@@ -6,23 +6,23 @@
 #include "utils.h"
 #include "ad.h"
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
 
-    if(argc!=2){
+    if (argc != 2) {
         fprintf(stderr, "Needs input file");
         return 1;
     }
 
-	char *buffer=loadFile(argv[1]);
-    Token *tokens=tokenize(buffer);
+    char *buffer = loadFile(argv[1]);
+    Token *tokens = tokenize(buffer);
 
     showTokens(tokens);
 
     pushDomain();
     parse(tokens);
     printf("\n\n");
-    showDomain(symTable,"global");
+    showDomain(symTable, "global");
     dropDomain();
-    
-	return 0;
+
+    return 0;
 }

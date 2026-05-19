@@ -47,7 +47,7 @@ Token *tokenize(const char *pch) {
         case '\r': // handles different kinds of newlines (Windows: \r\n, Linux: \n, MacOS, OS X: \r
                    // or \n)
             if (pch[1] == '\n') pch++;
-            // fallthrough to \n
+            __attribute__((fallthrough));
         case '\n':
             line++;
             pch++;

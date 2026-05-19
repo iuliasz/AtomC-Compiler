@@ -401,6 +401,9 @@ bool varDef() {
                         var->varIdx = typeSize(&owner->type);
                         addSymbolToList(&owner->structMembers, dupSymbol(var));
                         break;
+                    case SK_VAR:
+                    case SK_PARAM:
+                        tkerr("invalid owner for variable definition");
                     }
                 } else {
                     var->varMem = safeAlloc(typeSize(&t));
@@ -1039,6 +1042,11 @@ bool exprPrimary(Ret *r) {
             tkerr("missing ) after function call");
         }
 
+        if (s->kind == SK_FN) tkerr("a function can only be called");
+        *r = (Ret){s->type, true, s->type.n >= 0};
+
+        // if (s->kind == SK_FN) tkerr("missing ( after function name");
+        // *r = (Ret){s->type, true, s->type.n >= 0};
         return true;
     }
     iTk = start;

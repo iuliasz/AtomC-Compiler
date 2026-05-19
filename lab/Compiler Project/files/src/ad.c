@@ -82,6 +82,8 @@ void freeSymbol(Symbol *s) {
     case SK_VAR:
         if (!s->owner) free(s->varMem);
         break;
+    case SK_PARAM:
+        break;
     case SK_FN:
         freeSymbols(s->fn.params);
         freeSymbols(s->fn.locals);

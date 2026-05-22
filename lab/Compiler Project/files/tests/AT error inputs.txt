@@ -3,7 +3,7 @@ if("abc");
 
 
 // the while condition must be a scalar value
-while('a');
+while("A");
 
 // a void function cannot return a value
 void k(){
@@ -11,7 +11,7 @@ void k(){
 }
 
 // the return value must be a scalar value
-void k(){
+int k(){
     return "ab";
 }
 
@@ -35,8 +35,18 @@ __________________________
 // the assign destination cannot be constant
 text=1;
 
+// the assign source must be a scalar
+int x;
+int v[3];
+
+x=v;
+
 // the assign destination must be scalar
-i="ab";
+int i[10];
+
+void q() {
+    i = 3;
+}
 
 // the assign source cannot be converted to destination
 text[i]=a;

@@ -5,6 +5,7 @@
 #include "parser.h"
 #include "utils.h"
 #include "ad.h"
+#include "vm.h"
 
 int main(int argc, char **argv) {
 
@@ -19,9 +20,12 @@ int main(int argc, char **argv) {
     showTokens(tokens);
 
     pushDomain();
+    vmInit();
     parse(tokens);
     printf("\n\n");
-    showDomain(symTable, "global");
+    // showDomain(symTable, "global");
+    Instr *testCode = genTestProgram();
+    run(testCode);
     dropDomain();
 
     return 0;

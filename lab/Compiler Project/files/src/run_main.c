@@ -24,7 +24,8 @@ int main(int argc, char **argv) {
     parse(tokens);
     printf("\n\n");
     // showDomain(symTable, "global");
-    Instr *testCode = genTestProgram();
+    // Instr *testCode = genTestProgram();
+    Instr *testCode = genTestProgramSecondary();
     run(testCode);
     dropDomain();
 

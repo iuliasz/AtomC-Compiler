@@ -54,12 +54,12 @@ int popi() {
     return SP--->i;
 }
 
-void pushf(double f) {
+void pushd(double f) {
     if (SP + 1 == stack + 10000) err("trying to push into a full stack");
     (++SP)->f = f;
 }
 
-double popf() {
+double popd() {
     if (SP == stack - 1) err("trying to pop from empty stack");
     return SP--->f;
 }
@@ -78,13 +78,16 @@ void put_i() {
     printf("=> %d", popi());
 }
 
-void put_f() {
-    printf("=> %g", popf());
+void put_d() {
+    printf("=> %g", popd());
 }
 
 void vmInit() {
     Symbol *fn = addExtFn("put_i", put_i, (Type){TB_VOID, NULL, -1});
     addFnParam(fn, "i", (Type){TB_INT, NULL, -1});
+
+    Symbol *fnd = addExtFn("put_d", put_d, (Type){TB_VOID, NULL, -1});
+    addFnParam(fnd, "d", (Type){TB_DOUBLE, NULL, -1});
 }
 
 void run(Instr *IP) {
@@ -170,15 +173,15 @@ void run(Instr *IP) {
             IP = IP->next;
             break;
         case OP_ADD_F:
-            fTop = popf();
-            fBefore = popf();
+            fTop = popd();
+            fBefore = popd();
             pushi(fBefore + fTop);
             printf("ADD.f\t// %g+%g -> %g", fBefore, fTop, fBefore + fTop);
             IP = IP->next;
             break;
         case OP_LESS_F:
-            fTop = popf();
-            fBefore = popf();
+            fTop = popd();
+            fBefore = popd();
             pushi(fBefore < fTop);
             printf("LESS.f\t// %g<%g -> %d", fBefore, fTop, fBefore < fTop);
             IP = IP->next;
@@ -244,3 +247,33 @@ void f(double n){       // stack frame: n[-2] ret[-1] oldFP[0] i[1]
         }
 }
 */
+Instr *genTestProgramSecondary() {
+    Instr *code = NULL;
+    addInstrWithInt(&code, OP_PUSH_F, 2.0);
+    Instr *callPos = addInstr(&code, OP_CALL);
+    addInstr(&code, OP_HALT);
+    callPos->arg.instr = addInstrWithInt(&code, OP_ENTER, 1);
+    // int i=0;
+    addInstrWithInt(&code, OP_PUSH_F, 0.0);
+    addInstrWithInt(&code, OP_FPSTORE, 1);
+    // while(i<n){
+    Instr *whilePos = addInstrWithInt(&code, OP_FPLOAD, 1);
+    addInstrWithInt(&code, OP_FPLOAD, -2);
+    addInstr(&code, OP_LESS_F);
+    Instr *jfAfter = addInstr(&code, OP_JF);
+    // put_d(d);
+    addInstrWithInt(&code, OP_FPLOAD, 1);
+    Symbol *s = findSymbol("put_d");
+    if (!s) err("undefined: put_d");
+    addInstr(&code, OP_CALL_EXT)->arg.extFnPtr = s->fn.extFnPtr;
+    // i=i+1;
+    addInstrWithInt(&code, OP_FPLOAD, 1);
+    addInstrWithInt(&code, OP_PUSH_F, 1);
+    addInstr(&code, OP_ADD_F);
+    addInstrWithInt(&code, OP_FPSTORE, 1);
+    // } ( the next iteration)
+    addInstr(&code, OP_JMP)->arg.instr = whilePos;
+    // returns from function
+    jfAfter->arg.instr = addInstrWithInt(&code, OP_RET_VOID, 1);
+    return code;
+}

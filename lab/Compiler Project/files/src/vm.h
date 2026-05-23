@@ -85,3 +85,5 @@ void run(Instr *IP);
 
 // generates a test program
 Instr *genTestProgram();
+
+Instr *genTestProgramSecondary();

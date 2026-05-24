@@ -169,21 +169,21 @@ void run(Instr *IP) {
             break;
         case OP_PUSH_F:
             printf("PUSH.f\t%f", IP->arg.f);
-            pushi(IP->arg.f);
+            pushd(IP->arg.f);
             IP = IP->next;
             break;
         case OP_ADD_F:
             fTop = popd();
             fBefore = popd();
-            pushi(fBefore + fTop);
-            printf("ADD.f\t// %g+%g -> %g", fBefore, fTop, fBefore + fTop);
+            pushd(fBefore + fTop);
+            printf("ADD.f\t// %f+%f -> %f", fBefore, fTop, fBefore + fTop);
             IP = IP->next;
             break;
         case OP_LESS_F:
             fTop = popd();
             fBefore = popd();
             pushi(fBefore < fTop);
-            printf("LESS.f\t// %g<%g -> %d", fBefore, fTop, fBefore < fTop);
+            printf("LESS.f\t// %f<%f -> %d", fBefore, fTop, fBefore < fTop);
             IP = IP->next;
             break;
         default:
@@ -249,12 +249,12 @@ void f(double n){       // stack frame: n[-2] ret[-1] oldFP[0] i[1]
 */
 Instr *genTestProgramSecondary() {
     Instr *code = NULL;
-    addInstrWithInt(&code, OP_PUSH_F, 2.0);
+    addInstrWithDouble(&code, OP_PUSH_F, 2.0);
     Instr *callPos = addInstr(&code, OP_CALL);
     addInstr(&code, OP_HALT);
     callPos->arg.instr = addInstrWithInt(&code, OP_ENTER, 1);
     // int i=0;
-    addInstrWithInt(&code, OP_PUSH_F, 0.0);
+    addInstrWithDouble(&code, OP_PUSH_F, 0.0);
     addInstrWithInt(&code, OP_FPSTORE, 1);
     // while(i<n){
     Instr *whilePos = addInstrWithInt(&code, OP_FPLOAD, 1);
@@ -266,9 +266,9 @@ Instr *genTestProgramSecondary() {
     Symbol *s = findSymbol("put_d");
     if (!s) err("undefined: put_d");
     addInstr(&code, OP_CALL_EXT)->arg.extFnPtr = s->fn.extFnPtr;
-    // i=i+1;
+    // i=i+0.5;
     addInstrWithInt(&code, OP_FPLOAD, 1);
-    addInstrWithInt(&code, OP_PUSH_F, 1);
+    addInstrWithDouble(&code, OP_PUSH_F, 0.5);
     addInstr(&code, OP_ADD_F);
     addInstrWithInt(&code, OP_FPSTORE, 1);
     // } ( the next iteration)

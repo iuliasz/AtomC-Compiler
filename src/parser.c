@@ -494,9 +494,11 @@ bool unit() {
 bool stm() {
     rule("stm");
     Token *start = iTk;
+    Instr *startInstr = owner ? lastInstr(owner->fn.instr) : NULL;
 
     Ret rCond, rExpr;
     if (stmCompound(true)) return true;
+    if (owner) delInstrAfter(startInstr);
     iTk = start;
     if (consume(IF)) {
         if (consume(LPAR)) {
@@ -521,6 +523,7 @@ bool stm() {
         tkerr("missing ( after if");
     }
     iTk = start;
+    if (owner) delInstrAfter(startInstr);
     if (consume(WHILE)) {
         if (consume(LPAR)) {
             if (expr(&rCond)) {
@@ -536,6 +539,7 @@ bool stm() {
         tkerr("missing ( after while");
     }
     iTk = start;
+    if (owner) delInstrAfter(startInstr);
     if (consume(RETURN)) {
         if (expr(&rExpr)) {
             if (owner->type.tb == TB_VOID) tkerr("a void function cannot return a value");
@@ -549,11 +553,13 @@ bool stm() {
 
         tkerr("missing ; after return");
     }
+    if (owner) delInstrAfter(startInstr);
     iTk = start;
     if (expr(&rExpr)) {
         if (consume(SEMICOLON)) return true;
         tkerr("invalid statement or missing ;");
     }
+    if (owner) delInstrAfter(startInstr);
     if (consume(SEMICOLON)) return true;
     iTk = start;
     return false;
@@ -596,6 +602,7 @@ bool expr(Ret *r) {
 }
 
 // exprAssign: exprUnary ASSIGN exprAssign | exprOr
+    Instr *startInstr = owner ? lastInstr(owner->fn.instr) : NULL;
 bool exprAssign(Ret *r) {
     rule("exprAssign");
     Token *start = iTk;
@@ -616,7 +623,9 @@ bool exprAssign(Ret *r) {
 
                 return true;
             }
+    if (owner) delInstrAfter(startInstr);
             tkerr("missing expression after =");
+    if (owner) delInstrAfter(startInstr);
         }
     }
     iTk = start;
@@ -1005,6 +1014,8 @@ bool exprPostfixPrim(Ret *r) {
 bool exprPrimary(Ret *r) {
     rule("exprPrimary");
     Token *start = iTk;
+    Instr *startInstr = owner ? lastInstr(owner->fn.instr) : NULL;
+
     if (consume(ID)) {
         Token *tkName = consumedTk;
         Symbol *s = findSymbol(tkName->text);
@@ -1050,16 +1061,19 @@ bool exprPrimary(Ret *r) {
         return true;
     }
     iTk = start;
+    if (owner) delInstrAfter(startInstr);
     if (consume(INT)) {
         *r = (Ret){{TB_INT, NULL, -1}, false, true};
 
         return true;
     }
+    if (owner) delInstrAfter(startInstr);
     iTk = start;
     if (consume(DOUBLE)) {
         *r = (Ret){{TB_DOUBLE, NULL, -1}, false, true};
 
         return true;
+    if (owner) delInstrAfter(startInstr);
     }
     iTk = start;
     if (consume(CHAR)) {
@@ -1067,11 +1081,13 @@ bool exprPrimary(Ret *r) {
 
         return true;
     }
+    if (owner) delInstrAfter(startInstr);
     iTk = start;
     if (consume(STRING)) {
         *r = (Ret){{TB_CHAR, NULL, 0}, false, true};
 
         return true;
+    if (owner) delInstrAfter(startInstr);
     }
     iTk = start;
     if (consume(LPAR)) {
@@ -1083,6 +1099,7 @@ bool exprPrimary(Ret *r) {
             if (consume(RPAR)) return true;
             tkerr("missing ) after expression");
         }
+    if (owner) delInstrAfter(startInstr);
         tkerr("missing expression after (");
     }
     iTk = start;

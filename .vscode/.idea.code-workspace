@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "../.idea"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../info"
+		},
+		{
+			"path": "../outputs"
+		},
+		{
+			"path": "../src"
+		},
+		{
+			"path": "../tests"
+		}
+	]
+}

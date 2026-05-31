@@ -44,8 +44,6 @@ typedef enum {
     ,
     OP_LESS_I // compares 2 int values from stack and puts the result on stack as int
     ,
-    OP_LESS_F,
-
     // added instructions for code generation
     OP_PUSH_F // [ct.f] puts on stack the constant ct.f
     ,

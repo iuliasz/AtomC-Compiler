@@ -216,7 +216,7 @@ void run(Instr *IP) {
 
         // added for code generation
         case OP_CONV_F_I:
-            fTop = popf();
+            fTop = popd();
             pushi((int)fTop);
             printf("CONV.f.i\t// %g -> %d", fTop, (int)fTop);
             IP = IP->next;
@@ -276,11 +276,8 @@ void run(Instr *IP) {
         default:
             err("run: not implemented instruction: %d", IP->op);
         }
-    default:
-        err("run: instructiune neimplementata: %d", IP->op);
+        putchar('\n');
     }
-    putchar('\n');
-}
 }
 
 // param i offset is i-num_of_params-1, i=0,...

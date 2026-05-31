@@ -668,6 +668,8 @@ bool exprAssign(Ret *r) {
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_STORE_F);
                     break;
+                default:
+                    break;
                 }
 
                 return true;
@@ -822,6 +824,8 @@ bool exprRelPrim(Ret *r) {
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_LESS_F);
                     break;
+                default:
+                    break;
                 }
                 break;
             }
@@ -854,6 +858,8 @@ bool exprRelPrim(Ret *r) {
                     break;
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_LESS_F);
+                    break;
+                default:
                     break;
                 }
                 break;
@@ -888,6 +894,8 @@ bool exprRelPrim(Ret *r) {
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_LESS_F);
                     break;
+                default:
+                    break;
                 }
                 break;
             }
@@ -920,6 +928,8 @@ bool exprRelPrim(Ret *r) {
                     break;
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_LESS_F);
+                    break;
+                default:
                     break;
                 }
                 break;
@@ -972,6 +982,8 @@ bool exprAddPrim(Ret *r) {
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_ADD_F);
                     break;
+                default:
+                    break;
                 }
                 break;
             case SUB:
@@ -981,6 +993,8 @@ bool exprAddPrim(Ret *r) {
                     break;
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_SUB_F);
+                    break;
+                default:
                     break;
                 }
                 break;
@@ -1015,6 +1029,8 @@ bool exprAddPrim(Ret *r) {
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_ADD_F);
                     break;
+                default:
+                    break;
                 }
                 break;
             case SUB:
@@ -1024,6 +1040,8 @@ bool exprAddPrim(Ret *r) {
                     break;
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_SUB_F);
+                    break;
+                default:
                     break;
                 }
                 break;
@@ -1076,6 +1094,8 @@ bool exprMulPrim(Ret *r) {
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_MUL_F);
                     break;
+                default:
+                    break;
                 }
                 break;
             case DIV:
@@ -1085,6 +1105,8 @@ bool exprMulPrim(Ret *r) {
                     break;
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_DIV_F);
+                    break;
+                default:
                     break;
                 }
                 break;
@@ -1120,6 +1142,8 @@ bool exprMulPrim(Ret *r) {
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_MUL_F);
                     break;
+                default:
+                    break;
                 }
                 break;
             case DIV:
@@ -1129,6 +1153,8 @@ bool exprMulPrim(Ret *r) {
                     break;
                 case TB_DOUBLE:
                     addInstr(&owner->fn.instr, OP_DIV_F);
+                    break;
+                default:
                     break;
                 }
                 break;
@@ -1329,6 +1355,8 @@ bool exprPrimary(Ret *r) {
                 case TB_DOUBLE:
                     addInstrWithInt(&owner->fn.instr, OP_FPADDR_F, s->varIdx + 1);
                     break;
+                default:
+                    break;
                 }
             }
         }
@@ -1339,6 +1367,8 @@ bool exprPrimary(Ret *r) {
                 break;
             case TB_DOUBLE:
                 addInstrWithInt(&owner->fn.instr, OP_FPADDR_F, s->paramIdx - symbolsLen(s->owner->fn.params) - 1);
+                break;
+            default:
                 break;
             }
         }
@@ -1375,16 +1405,12 @@ bool exprPrimary(Ret *r) {
     if (consume(CHAR)) {
         *r = (Ret){{TB_CHAR, NULL, -1}, false, true};
 
-        Token *ct = consumedTk;
-
         return true;
     }
     iTk = start;
     if (owner) delInstrAfter(startInstr);
     if (consume(STRING)) {
         *r = (Ret){{TB_CHAR, NULL, 0}, false, true};
-
-        Token *ct = consumedTk;
 
         return true;
     }

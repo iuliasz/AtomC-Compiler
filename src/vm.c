@@ -168,7 +168,7 @@ void run(Instr *IP) {
             IP = IP->next;
             break;
         case OP_PUSH_F:
-            printf("PUSH.f\t%f", IP->arg.f);
+            printf("PUSH.f\t%.2f", IP->arg.f);
             pushd(IP->arg.f);
             IP = IP->next;
             break;
@@ -176,14 +176,14 @@ void run(Instr *IP) {
             fTop = popd();
             fBefore = popd();
             pushd(fBefore + fTop);
-            printf("ADD.f\t// %f+%f -> %f", fBefore, fTop, fBefore + fTop);
+            printf("ADD.f\t// %.2f+%.2f -> %.2f", fBefore, fTop, fBefore + fTop);
             IP = IP->next;
             break;
         case OP_LESS_F:
             fTop = popd();
             fBefore = popd();
             pushi(fBefore < fTop);
-            printf("LESS.f\t// %f<%f -> %d", fBefore, fTop, fBefore < fTop);
+            printf("LESS.f\t// %.2f<%.2f -> %d", fBefore, fTop, fBefore < fTop);
             IP = IP->next;
             break;
         default:

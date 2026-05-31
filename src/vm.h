@@ -108,6 +108,16 @@ struct Instr {
 // returns the newly added instruction
 Instr *addInstr(Instr **list, Opcode op);
 
+// inserts a new instruction after the specified instruction and sets its "op" field
+// returns the newly added instruction
+Instr *insertInstr(Instr *before, int op);
+
+// deletes all the instructions after the given one
+void delInstrAfter(Instr *instr);
+
+// returns the last instruction from list
+Instr *lastInstr(Instr *list);
+
 // add an instruction which has an argument of type int
 Instr *addInstrWithInt(Instr **list, Opcode op, int argVal);
 
